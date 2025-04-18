@@ -1,4 +1,4 @@
-name: run main.py
+name: daily_check
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - main
   workflow_dispatch:
   schedule:
-    - cron: '13,43 * * * *' # At 00:00 on Monday
+    - cron: "15 22 * * 1-5" # At 22:15 PM UTC, Monday through Friday
 
 jobs:
   build:
@@ -18,10 +18,10 @@ jobs:
       - name: setup python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.10' # install the python version needed
+          python-version: "3.10" # install the python version needed
 
       - name: cache python packages
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
@@ -35,15 +35,15 @@ jobs:
 
       - name: execute py script # run main.py
         env:
-          LOCATION: ${{ secrets.LOCATION }}
           NUMBER: ${{ secrets.NUMBER }}
-          PASSPORT_NUMBER: ${{ secrets.PASSPORT_NUMBER }}
-          SURNAME: ${{ secrets.SURNAME }}
-          TIMEZONE: ${{ secrets.TIMEZONE }}
           FROM: ${{ secrets.FROM }}
           TO: ${{ secrets.TO }}
           PASSWORD: ${{ secrets.PASSWORD }}
           SMTP: ${{ secrets.SMTP }}
           TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
           TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          LAST_UPDATE_DATE: ${{ vars.LAST_UPDATE_DATE }}
+          LAST_UPDATE_DATE_VAR: "LAST_UPDATE_DATE"
+          ALWAYS_NOTIFY: True
         run: python trigger.py
